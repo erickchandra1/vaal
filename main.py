@@ -11,6 +11,7 @@ import os
 from custom_datasets import *
 import model
 import vgg
+from unet.model import UNet
 from solver import Solver
 from utils import *
 import arguments
@@ -33,8 +34,8 @@ def main(args):
 
         args.num_images = 50000
         args.num_val = 5000
-        args.budget = 2500
-        args.initial_budget = 5000
+        args.budget = 500
+        args.initial_budget = 500
         args.num_classes = 10
     elif args.dataset == 'cifar100':
         test_dataloader = data.DataLoader(
@@ -81,7 +82,8 @@ def main(args):
     args.cuda = args.cuda and torch.cuda.is_available()
     solver = Solver(args, test_dataloader)
 
-    splits = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4]
+    # splits = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4]
+    splits = [x * 0.01 for x in range(1, 21)]
 
     current_indices = list(initial_indices)
 
@@ -90,7 +92,8 @@ def main(args):
     for split in splits:
         # need to retrain all the models on the new images
         # re initialize and retrain the models
-        task_model = vgg.vgg16_bn(num_classes=args.num_classes)
+        # task_model = vgg.vgg16_bn(num_classes=args.num_classes)
+        task_model = UNet(n_channels=3, n_classes=10)
         vae = model.VAE(args.latent_dim)
         discriminator = model.Discriminator(args.latent_dim)
 

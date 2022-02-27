@@ -94,8 +94,8 @@ class Solver:
                     lab_real_preds = lab_real_preds.cuda()
                     unlab_real_preds = unlab_real_preds.cuda()
 
-                dsc_loss = self.bce_loss(labeled_preds, lab_real_preds) + \
-                        self.bce_loss(unlabeled_preds, unlab_real_preds)
+                dsc_loss = self.bce_loss(labeled_preds.squeeze(), lab_real_preds) + \
+                        self.bce_loss(unlabeled_preds.squeeze(), unlab_real_preds)
                 total_vae_loss = unsup_loss + transductive_loss + self.args.adversary_param * dsc_loss
                 optim_vae.zero_grad()
                 total_vae_loss.backward()
@@ -127,8 +127,8 @@ class Solver:
                     lab_real_preds = lab_real_preds.cuda()
                     unlab_fake_preds = unlab_fake_preds.cuda()
                 
-                dsc_loss = self.bce_loss(labeled_preds, lab_real_preds) + \
-                        self.bce_loss(unlabeled_preds, unlab_fake_preds)
+                dsc_loss = self.bce_loss(labeled_preds.squeeze(), lab_real_preds) + \
+                        self.bce_loss(unlabeled_preds.squeeze(), unlab_fake_preds)
 
                 optim_discriminator.zero_grad()
                 dsc_loss.backward()
